@@ -16,7 +16,7 @@ def loadPlugins():
         io = FileIO(CONFIG_FILE)
         plugins = json.load(io)['plugins']
         for plugin in plugins:
-            bot.load_extension(plugin)
+            bot.load_extension('plugins.{}'.format(plugin))
 
 @bot.event
 async def on_ready():
@@ -25,6 +25,6 @@ async def on_ready():
     print('Plugins loaded!\n')
     print('Logged in as: {} - {}\nVersion: {}\n'.format(bot.user.name, bot.user.id, discord.__version__))
     await bot.change_presence(activity=discord.Game(name='N00by\'s Hentai Collection', type=1, url='https://twitch.tv/paymoneywubby'))
-    print('successfully logged in and booted...!\n')
+    print('successfully logged in and booted!\n')
 
 bot.run(TOKEN, bot=True, reconnect=True)

@@ -2,13 +2,14 @@
 import discord, random
 from discord.ext import commands
 
-class HelloWorldCog(commands.Cog):
+class HangoutsCommands(commands.Cog):
     def __init(self, bot):
         self.bot = bot
 
     #Commands
     @commands.command()
     async def helloworld(self, ctx):
+        '''replies with 'Hello World!' '''
         await ctx.send('Hello World!')
 
     @commands.command()
@@ -37,4 +38,4 @@ class HelloWorldCog(commands.Cog):
         await ctx.send(value)
 
 def setup(bot):
-    bot.add_cog(HelloWorldCog(bot))
+    bot.add_cog(HangoutsCommands(bot))
