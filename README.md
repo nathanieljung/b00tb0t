@@ -1,3 +1,3 @@
 # b00tb0t
 
-Fuck you n00t
+you are loved n00t
