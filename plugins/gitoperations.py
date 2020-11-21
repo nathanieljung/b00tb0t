@@ -8,13 +8,8 @@ class GitOperations(commands.Cog):
 
     #Commands
     @commands.command()
-    async def grive(self, ctx)
+    async def grive(self, ctx):
         await ctx.send('s\ny\nn\nc\ni\nn\ng\n\nl\ni\nb\ns')
-    @commands.command()
-    async def helloworld(self, ctx):
-        '''replies with 'Hello World!' '''
-        await ctx.send('Hello World!')
-
 #cog setup
 def setup(bot):
     bot.add_cog(GitOperations(bot))
