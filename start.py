@@ -7,9 +7,17 @@ from io import FileIO
 import json
 
 CONFIG_FILE='/home/discordbot/discord/config.json'
-TOKEN = 'NzczNzQ1ODA1MjI3OTgyOTEw.X6Ns7w.6FTnUEgypxB0OeCmLei2PBqcyGY'
+TOKEN = loadConfig(['TOKEN'][0])
 
 bot = commands.Bot(command_prefix='!', description='b00tbot')
+
+def loadConfig(keys):
+    returnList = []
+    for key in keys:
+        io = FileIO(CONFIG_FILE)
+        toReturn.append(json.load(io)[key])
+    return returnList
+    
 
 def loadPlugins():
     if __name__ == '__main__':
