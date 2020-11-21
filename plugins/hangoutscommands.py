@@ -10,7 +10,7 @@ class HangoutsCommands(commands.Cog):
     @commands.command()
     async def helloworld(self, ctx):
         '''replies with 'Hello World!' '''
-        await ctx.send('Hello World!')
+        await ctx.send('Goodbye World!')
 
     @commands.command()
     async def geamswhen(self, ctx):

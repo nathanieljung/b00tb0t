@@ -6,18 +6,22 @@ from discord.ext import commands
 from io import FileIO
 import json
 
+import subprocess
+
 CONFIG_FILE='/home/discordbot/discord/config.json'
-TOKEN = loadConfig(['TOKEN'][0])
 
 bot = commands.Bot(command_prefix='!', description='b00tbot')
 
 def loadConfig(keys):
     returnList = []
+    io = FileIO(CONFIG_FILE)
+    config = json.load(io)
     for key in keys:
-        io = FileIO(CONFIG_FILE)
-        toReturn.append(json.load(io)[key])
+        returnList.append(config[key])
     return returnList
     
+
+TOKEN = loadConfig(['TOKEN'])[0]
 
 def loadPlugins():
     if __name__ == '__main__':
@@ -35,5 +39,9 @@ async def on_ready():
     print('Logged in as: {} - {}\nVersion: {}\n'.format(bot.user.name, bot.user.id, discord.__version__))
     await bot.change_presence(activity=discord.Game(name='N00by\'s Hentai Collection', type=1, url='https://twitch.tv/paymoneywubby'))
     print('Successfully logged in and booted!\n')
+
+@commands.command()
+async def restart(self, ctx):
+    subprocess.run('python3 botrestart.py')
 
 bot.run(TOKEN, bot=True, reconnect=True)
