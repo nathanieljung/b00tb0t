@@ -31,6 +31,11 @@ def loadPlugins():
             bot.load_extension('plugins.{}'.format(plugin))
             print('Loaded extension: {}'.format(plugin))
 
+@bot.command()
+async def restart(ctx):
+    await ctx.send('Restarting...')
+    subprocess.run('./restart.sh')
+
 @bot.event
 async def on_ready():
     print('\nLoading plugins...\n')
@@ -40,8 +45,5 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name='N00by\'s Hentai Collection', type=1, url='https://twitch.tv/paymoneywubby'))
     print('Successfully logged in and booted!\n')
 
-@commands.command()
-async def restart(self, ctx):
-    subprocess.run('python3 botrestart.py')
 
 bot.run(TOKEN, bot=True, reconnect=True)
