@@ -48,11 +48,10 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
-    print(message.channel)
     autoreplies = loadConfig(['autoreplies'])
-    for autoreply_key in autoreplies.keys():
-        if autoreply_key is in message.content:
-            await message.channel.send(autoreplies[autoreply_key])
+    for autoreply_key in autoreplies[0].keys():
+        if autoreply_key in message.content:
+            await message.channel.send(autoreplies[0][autoreply_key])
     if message.content == 'test':
         await message.channel.send('Testing 1 2 3!')
 
