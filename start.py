@@ -45,5 +45,15 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name='N00by\'s Hentai Collection', type=1, url='https://twitch.tv/paymoneywubby'))
     print('Successfully logged in and booted!\n')
 
+@bot.event
+async def on_message(message):
+    await bot.process_commands(message)
+    print(message.channel)
+    autoreplies = loadConfig(['autoreplies'])
+    for autoreply_key in autoreplies.keys():
+        if autoreply_key is in message.content:
+            await message.channel.send(autoreplies[autoreply_key])
+    if message.content == 'test':
+        await message.channel.send('Testing 1 2 3!')
 
 bot.run(TOKEN, bot=True, reconnect=True)
