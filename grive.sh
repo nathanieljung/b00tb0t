@@ -1,1 +1,7 @@
-git pull --no-commit
+#!/bin/bash
+
+if output=$(git status --porcelain) && [ -z "$output" ]; then
+	git pull --no-commit
+else
+	echo "ERROR: git not clean. Can't pull."
+fi
