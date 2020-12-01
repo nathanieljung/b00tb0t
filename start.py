@@ -62,7 +62,7 @@ async def on_message(message):
             if autoreaction in message.content:
                 print(autoreaction)
                 await message.add_reaction(autoreactions[0][autoreaction])
-    if int(random.random()*12+1) <= 12:
+    if int(random.random()*12+1) == 12:
         sixtyninefourtwenty = ['6️⃣', '9️⃣', '4️⃣', '2️⃣', '0️⃣']
         for react in sixtyninefourtwenty:
             await message.add_reaction(react)
