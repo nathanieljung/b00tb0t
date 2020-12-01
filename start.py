@@ -8,7 +8,7 @@ import json
 
 import subprocess
 
-import random
+from random import random
 
 CONFIG_FILE='/home/discordbot/discord/config.json'
 
@@ -55,14 +55,17 @@ async def on_message(message):
         autoreplies = loadConfig(['autoreplies'])
         for autoreply_key in autoreplies[0].keys():
             if autoreply_key in message.content:
-                await message.channel.send(autoreplies[0][autoreply_key])
-            
+                autoreply_options = autoreplies[0][autoreply_key]
+                autoreply = autoreply_options[int(random()*len(autoreply_options))]
+                await message.channel.send(autoreply)
+        
         autoreactions = loadConfig(['autoreactions'])
         for autoreaction in autoreactions[0].keys():
             if autoreaction in message.content:
                 print(autoreaction)
                 await message.add_reaction(autoreactions[0][autoreaction])
-    if int(random.random()*12+1) == 12:
+    
+    if int(random()*12) == 0:
         sixtyninefourtwenty = ['6️⃣', '9️⃣', '4️⃣', '2️⃣', '0️⃣']
         for react in sixtyninefourtwenty:
             await message.add_reaction(react)
