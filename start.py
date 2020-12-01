@@ -41,7 +41,7 @@ def loadPlugins():
             print('Loaded extension: {}'.format(plugin))
 
 @bot.command()
-async def save(ctx)
+async def save(ctx):
     data = dict()
     data['channel_log'] = channel_log
     io = open(SAVE_FILE, 'w')
