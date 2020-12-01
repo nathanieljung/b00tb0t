@@ -11,13 +11,20 @@ import subprocess
 from random import random
 
 CONFIG_FILE='/home/discordbot/discord/config.json'
+SAVE_FILE='/home/discordbot/discord/save.json'
 
 bot = commands.Bot(command_prefix='!', description='b00tbot')
 
+channel_log = dict()
+
+config = False
+
 def loadConfig(keys):
-    returnList = []
-    io = FileIO(CONFIG_FILE)
-    config = json.load(io)
+    if not config:
+        returnList = []
+        io = FileIO(CONFIG_FILE)
+        config = json.load(io)
+        
     for key in keys:
         returnList.append(config[key])
     return returnList
@@ -34,8 +41,17 @@ def loadPlugins():
             print('Loaded extension: {}'.format(plugin))
 
 @bot.command()
+async def save(ctx)
+    data = dict()
+    data['channel_log'] = channel_log
+    io = open(SAVE_FILE, 'w')
+    json.dump(data, io)
+    io.close()
+
+@bot.command()
 async def restart(ctx):
     await ctx.send('Restarting...')
+    await save()
     subprocess.run('./restart.sh')
 
 @bot.event
@@ -50,8 +66,19 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
-
+    
+    if not message.channel.id in channel_log:
+        channel_log[message.channel.id] = dict()
+    
     if message.author.id != 773745805227982910:
+        
+        if message.content == 'F':
+            channel_log[message.channel.id]['Fs']++
+            if channel_log[message.channel.id]['Fs'] == 3:
+                await message.channel.send('F')
+        else:
+            channel_log[message.channel.id]['Fs'] = 0
+        
         autoreplies = loadConfig(['autoreplies'])
         for autoreply_key in autoreplies[0].keys():
             if autoreply_key in message.content:
@@ -62,7 +89,6 @@ async def on_message(message):
         autoreactions = loadConfig(['autoreactions'])
         for autoreaction in autoreactions[0].keys():
             if autoreaction in message.content:
-                print(autoreaction)
                 await message.add_reaction(autoreactions[0][autoreaction])
     
     if int(random()*12) == 0:
