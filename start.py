@@ -8,6 +8,8 @@ import json
 
 import subprocess
 
+import random
+
 CONFIG_FILE='/home/discordbot/discord/config.json'
 
 bot = commands.Bot(command_prefix='!', description='b00tbot')
@@ -60,7 +62,10 @@ async def on_message(message):
             if autoreaction in message.content:
                 print(autoreaction)
                 await message.add_reaction(autoreactions[0][autoreaction])
-
+    if int(random.random()*12+1) <= 12:
+        sixtyninefourtwenty = ['\U00000036', '<:nine:>', '<:four:>', '<:two:>', '<:zero:>']
+        for react in sixtyninefourtwenty:
+            await message.add_reaction(react)
     if message.content == 'test':
         await message.channel.send('https://cdn.discordapp.com/attachments/775772474621165588/778466913872379924/EnEJNYbXcAUsBT8.png')
 
