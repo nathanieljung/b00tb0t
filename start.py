@@ -73,7 +73,7 @@ async def on_message(message):
     if message.author.id != 773745805227982910:
         
         if message.content == 'F':
-            channel_log[message.channel.id]['Fs']++
+            channel_log[message.channel.id]['Fs'] +=1
             if channel_log[message.channel.id]['Fs'] == 3:
                 await message.channel.send('F')
         else:
