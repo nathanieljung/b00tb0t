@@ -52,6 +52,13 @@ async def on_message(message):
     for autoreply_key in autoreplies[0].keys():
         if autoreply_key in message.content:
             await message.channel.send(autoreplies[0][autoreply_key])
+    
+    autoreactions = loadConfig(['autoreactions'])
+    for autoreaction in autoreactions[0].keys():
+        if autoreaction in message.content:
+            print(autoreaction)
+            await message.add_reaction(autoreactions[0][autoreaction])
+
     if message.content == 'test':
         await message.channel.send('Testing 1 2 3!')
 
