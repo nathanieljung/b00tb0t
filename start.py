@@ -48,18 +48,20 @@ async def on_ready():
 @bot.event
 async def on_message(message):
     await bot.process_commands(message)
-    autoreplies = loadConfig(['autoreplies'])
-    for autoreply_key in autoreplies[0].keys():
-        if autoreply_key in message.content:
-            await message.channel.send(autoreplies[0][autoreply_key])
-    
-    autoreactions = loadConfig(['autoreactions'])
-    for autoreaction in autoreactions[0].keys():
-        if autoreaction in message.content:
-            print(autoreaction)
-            await message.add_reaction(autoreactions[0][autoreaction])
+
+    if message.author.id != 773745805227982910:
+        autoreplies = loadConfig(['autoreplies'])
+        for autoreply_key in autoreplies[0].keys():
+            if autoreply_key in message.content:
+                await message.channel.send(autoreplies[0][autoreply_key])
+            
+        autoreactions = loadConfig(['autoreactions'])
+        for autoreaction in autoreactions[0].keys():
+            if autoreaction in message.content:
+                print(autoreaction)
+                await message.add_reaction(autoreactions[0][autoreaction])
 
     if message.content == 'test':
-        await message.channel.send('Testing 1 2 3!')
+        await message.channel.send('https://cdn.discordapp.com/attachments/775772474621165588/778466913872379924/EnEJNYbXcAUsBT8.png')
 
 bot.run(TOKEN, bot=True, reconnect=True)
