@@ -11,9 +11,9 @@ class GitOperations(commands.Cog):
     @commands.command()
     async def grive(self, ctx):
         await ctx.send('s\ny\nn\nc\ni\nn\ng\n\nl\ni\nb\ns')
-        output = subprocess.run('../grive.sh',check=TRUE, stdout=PIPE).stdout
+        output = subprocess.run('/home/discordbot/discord/grive.sh',encoding='ascii',check=True, stdout=subprocess.PIPE).stdout
         if 'ERROR: git not clean. Can\'t pull' in output:
-            await ctx.send('GRIVE FAILED')
+            await ctx.send('GRIVE FAILED. UNCOMMITTED CHANGES ON PI.')
         else:
             await ctx.send('GRIVE SUCCESS')
 
