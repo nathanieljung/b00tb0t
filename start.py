@@ -56,7 +56,7 @@ async def save(ctx):
 async def restart(ctx):
     await ctx.send('Restarting...')
     await save()
-    subprocess.run('./restart.sh')
+    subprocess.run('/home/discordbot/discord/restart.sh')
 
 @bot.event
 async def on_ready():
