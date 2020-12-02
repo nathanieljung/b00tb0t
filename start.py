@@ -21,11 +21,12 @@ channel_log = dict()
 
 
 def loadConfig(keys):
+    global config
     if not config:
-        returnList = []
         io = FileIO(CONFIG_FILE)
         config = json.load(io)
-        
+    
+    returnList = []
     for key in keys:
         returnList.append(config[key])
     return returnList
@@ -70,6 +71,7 @@ async def on_message(message):
     
     if not message.channel.id in channel_log:
         channel_log[message.channel.id] = dict()
+        channel_log[message.channel.id]['Fs'] = 0
     
     if message.author.id != 773745805227982910:
         
