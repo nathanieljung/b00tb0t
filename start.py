@@ -55,7 +55,7 @@ async def save(ctx):
 @bot.command()
 async def restart(ctx):
     await ctx.send('Restarting...')
-    await save()
+    await save(ctx)
     subprocess.run('/home/discordbot/discord/restart.sh')
 
 @bot.event
