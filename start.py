@@ -60,9 +60,16 @@ async def restart(ctx):
 
 @bot.event
 async def on_ready():
+    print('\nLoading save state...\n')
+    io = open(SAVE_FILE, 'r')
+    data = json.load(io)
+    channel_log = data['channel_log']
+    print('\nSave file loaded!\n')
+    
     print('\nLoading plugins...\n')
     loadPlugins()
     print('\nPlugins loaded!\n')
+    
     print('Logged in as: {} - {}\nVersion: {}\n'.format(bot.user.name, bot.user.id, discord.__version__))
     await bot.change_presence(activity=discord.Game(name='N00by\'s Hentai Collection', type=1, url='https://twitch.tv/paymoneywubby'))
     print('Successfully logged in and booted!\n')
