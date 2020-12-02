@@ -13,4 +13,4 @@ class PictureCommands(commands.Cog):
         await ctx.send('https://media.discordapp.net/attachments/775772474621165588/778466913872379924/EnEJNYbXcAUsBT8.png?width=249&height=375')
 
 def setup(bot):
-    bot.add_cog(HangoutsCommands(bot))
+    bot.add_cog(PictureCommands(bot))
