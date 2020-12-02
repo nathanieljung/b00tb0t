@@ -44,11 +44,13 @@ def loadPlugins():
 
 @bot.command()
 async def save(ctx):
+    await ctx.send('Saving...')
     data = dict()
     data['channel_log'] = channel_log
     io = open(SAVE_FILE, 'w')
     json.dump(data, io)
     io.close()
+    await ctx.send('Saved')
 
 @bot.command()
 async def restart(ctx):
@@ -94,7 +96,7 @@ async def on_message(message):
             if autoreaction in message.content:
                 await message.add_reaction(autoreactions[0][autoreaction])
     
-    if int(random()*12) == 0:
+    if int(random()*30) == 0:
         sixtyninefourtwenty = ['6️⃣', '9️⃣', '4️⃣', '2️⃣', '0️⃣']
         for react in sixtyninefourtwenty:
             await message.add_reaction(react)

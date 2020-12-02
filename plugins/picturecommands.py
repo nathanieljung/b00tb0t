@@ -2,7 +2,7 @@
 import discord, random
 from discord.ext import commands
 
-class HangoutsCommands(commands.Cog):
+class PictureCommands(commands.Cog):
     def __init(self, bot):
         self.bot = bot
 
