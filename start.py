@@ -12,12 +12,13 @@ from random import random
 
 CONFIG_FILE='/home/discordbot/discord/config.json'
 SAVE_FILE='/home/discordbot/discord/save.json'
+config = False
 
 bot = commands.Bot(command_prefix='!', description='b00tbot')
 
 channel_log = dict()
 
-config = False
+
 
 def loadConfig(keys):
     if not config:
