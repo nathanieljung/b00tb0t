@@ -40,7 +40,7 @@ def loadPlugins():
         plugins = json.load(io)['plugins']
         for plugin in plugins:
             bot.load_extension('plugins.{}'.format(plugin))
-            print('Loaded extension: {}'.format(plugin))
+            print('\tLoaded extension: {}'.format(plugin))
 
 @bot.command()
 async def save(ctx):
@@ -60,15 +60,15 @@ async def restart(ctx):
 
 @bot.event
 async def on_ready():
-    print('\nLoading save state...\n')
+    print('\n\nLoading save state...')
     io = open(SAVE_FILE, 'r')
     data = json.load(io)
     channel_log = data['channel_log']
-    print('\nSave file loaded!\n')
+    print('Save file loaded!\n')
     
-    print('\nLoading plugins...\n')
+    print('Loading plugins...')
     loadPlugins()
-    print('\nPlugins loaded!\n')
+    print('Plugins loaded!\n')
     
     print('Logged in as: {} - {}\nVersion: {}\n'.format(bot.user.name, bot.user.id, discord.__version__))
     await bot.change_presence(activity=discord.Game(name='N00by\'s Hentai Collection', type=1, url='https://twitch.tv/paymoneywubby'))

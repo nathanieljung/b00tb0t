@@ -1,0 +1,33 @@
+<script>
+    function addItem(){
+        var option = document.createElement("OPTION");  
+        var input = document.getElementById("add");
+        option.innerHTML = input.value;
+        option.value = input.value.toLowerCase();
+        input.value = "";
+
+        document.getElementById("fruit_select").appendChild(option);
+    }
+    function removeItem(){
+        var list = document.getElementById("fruit_select");
+        for(var count=list.options.length-1; count>=0; count--){
+            if(list.options[count].selected){
+                try { list.remove(count, null); }
+                catch (error) { list.remove(count) }
+            }
+        }
+    }
+</script>
+<p>What's your favorite fruit?</p>
+<input type="text" id="add" size ="50"/>
+<p>
+    <input type="submit" id="btnAdd" value="Add" onclick="addItem()">
+    <input type="submit" id="btnRm" value="Remove" onclick="removeItem()">
+</p>
+<select name="fruit" size=10 style="width:300px" id="fruit_select" multiple>
+    <option value ="none">Nothing</option>
+    <option value ="guava">Guava</option>
+    <option value ="lychee">Lychee</option>
+    <option value ="papaya">Papaya</option>
+    <option value ="watermelon">Watermelon</option>
+</select>
