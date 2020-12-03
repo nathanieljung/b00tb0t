@@ -13,6 +13,11 @@ class HangoutsCommands(commands.Cog):
         await ctx.send('Goodbye World!')
 
     @commands.command()
+    async def echo(self, ctx):
+        '''replies with users message '''
+        await ctx.send(ctx.message.content[6:])
+
+    @commands.command()
     async def geamswhen(self, ctx):
         choice = [
                     "games tonight for sure", 

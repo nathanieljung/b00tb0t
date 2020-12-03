@@ -2,3 +2,4 @@ config.json
 save.json
 __pycache__/*
 plugins/__pycache__/*
+.vscode/settings.json
