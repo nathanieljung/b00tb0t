@@ -71,7 +71,7 @@ async def on_ready():
     print('\nPlugins loaded!\n')
     
     print('Logged in as: {} - {}\nVersion: {}\n'.format(bot.user.name, bot.user.id, discord.__version__))
-    await bot.change_presence(activity=discord.Game(name='N00by\'s Hentai Collection', type=1, url='https://twitch.tv/paymoneywubby'))
+    await bot.change_presence(activity=discord.Game(name='Nobody\'s Hentai Collection', type=1, url='https://twitch.tv/paymoneywubby'))
     print('Successfully logged in and booted!\n')
 
 @bot.event
