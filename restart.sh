@@ -1,4 +1,4 @@
 #!/bin/sh
-cd /home/discordbot/discord
+cd ~/b00tb0t
 killall python3
 python3 start.py

@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /home/discordbot/discord
+cd ~/b00tb0t
 if output=$(git status --porcelain) && [ -z "$output" ]; then
 	git pull --no-commit
 else
