@@ -10,8 +10,8 @@ import subprocess
 
 from random import random
 
-CONFIG_FILE='~/b00tb0t/config.json'
-SAVE_FILE='~/b00tb0t/save.json'
+CONFIG_FILE='config.json'
+SAVE_FILE='save.json'
 config = False
 
 bot = commands.Bot(command_prefix='!', description='b00tbot')
@@ -56,7 +56,7 @@ async def save(ctx):
 async def restart(ctx):
     await ctx.send('Restarting...')
     await save(ctx)
-    subprocess.run('~/b00tb0t/restart.sh')
+    subprocess.run('./restart.sh')
 
 @bot.event
 async def on_ready():
