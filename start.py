@@ -1,4 +1,4 @@
-#this script starts the bot and loads all plugins. Plugins are located under /home/discordbot/discord/plugins
+#this script starts the bot and loads all plugins. Plugins are located under ./plugins
 import discord
 
 from discord.ext import commands
@@ -10,17 +10,14 @@ import subprocess
 
 from random import random
 
+#setup and config file variable setting
 CONFIG_FILE='config.json'
 SAVE_FILE='save.json'
 config = False
-
-bot = commands.Bot(command_prefix='!', description='b00tbot')
-
 channel_log = dict()
 
-
-
 def loadConfig(keys):
+    #This function loads values from the main config file based on keys. It checks if there is a cached config to avoid unnecessary file reading
     global config
     if not config:
         io = FileIO(CONFIG_FILE)
@@ -30,11 +27,9 @@ def loadConfig(keys):
     for key in keys:
         returnList.append(config[key])
     return returnList
-    
-
-TOKEN = loadConfig(['TOKEN'])[0]
 
 def loadPlugins():
+    #This function gets the functions to load from the config file and adds them as extensions to the bot
     if __name__ == '__main__':
         io = FileIO(CONFIG_FILE)
         plugins = json.load(io)['plugins']
@@ -44,6 +39,7 @@ def loadPlugins():
 
 @bot.command()
 async def save(ctx):
+    #This function saves the state of the chats that the bot is in
     await ctx.send('Saving...')
     data = dict()
     data['channel_log'] = channel_log
@@ -54,12 +50,14 @@ async def save(ctx):
 
 @bot.command()
 async def restart(ctx):
+    #This function quits the bot and reloads it
     await ctx.send('Restarting...')
     await save(ctx)
     subprocess.run('./restart.sh')
 
 @bot.event
 async def on_ready():
+    #This is the main startup function for the bot
     print('\n\nLoading save state...')
     io = open(SAVE_FILE, 'r')
     data = json.load(io)
@@ -76,8 +74,10 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
+    #This is the primary message handler for the bot. Default functionality not included in plugins is included here.
     await bot.process_commands(message)
     
+    #The bot will respond with an 'F' (to pay respects) after three consecutive 'F's in a channel.
     if not message.channel.id in channel_log:
         channel_log[message.channel.id] = dict()
         channel_log[message.channel.id]['Fs'] = 0
@@ -91,6 +91,7 @@ async def on_message(message):
         else:
             channel_log[message.channel.id]['Fs'] = 0
         
+        #This causes the bot to auto-reply to messages containing certain keywords that are added to the main configuration file.
         autoreplies = loadConfig(['autoreplies'])
         for autoreply_key in autoreplies[0].keys():
             if autoreply_key in message.content:
@@ -98,16 +99,19 @@ async def on_message(message):
                 autoreply = autoreply_options[int(random()*len(autoreply_options))]
                 await message.channel.send(autoreply)
         
+        #This causes the bot to auto-react to messages containing certain keywords that are added to the main configuration file.
         autoreactions = loadConfig(['autoreactions'])
         for autoreaction in autoreactions[0].keys():
             if autoreaction in message.content:
                 await message.add_reaction(autoreactions[0][autoreaction])
     
+    #The bot has a 1 in 30 chance of reacting with 69420 to any given message because I am very mature.
     if int(random()*30) == 0:
         sixtyninefourtwenty = ['6️⃣', '9️⃣', '4️⃣', '2️⃣', '0️⃣']
         for react in sixtyninefourtwenty:
             await message.add_reaction(react)
-    if message.content == 'test':
-        await message.channel.send('https://cdn.discordapp.com/attachments/775772474621165588/778466913872379924/EnEJNYbXcAUsBT8.png')
 
+#Getting the bot up and running
+bot = commands.Bot(command_prefix='!', description='b00tbot')
+TOKEN = loadConfig(['TOKEN'])[0]
 bot.run(TOKEN, bot=True, reconnect=True)
