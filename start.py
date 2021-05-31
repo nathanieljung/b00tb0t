@@ -15,6 +15,7 @@ CONFIG_FILE='config.json'
 SAVE_FILE='save.json'
 config = False
 channel_log = dict()
+bot = commands.Bot(command_prefix='!', description='b00tbot')
 
 def loadConfig(keys):
     #This function loads values from the main config file based on keys. It checks if there is a cached config to avoid unnecessary file reading
@@ -112,6 +113,5 @@ async def on_message(message):
             await message.add_reaction(react)
 
 #Getting the bot up and running
-bot = commands.Bot(command_prefix='!', description='b00tbot')
 TOKEN = loadConfig(['TOKEN'])[0]
 bot.run(TOKEN, bot=True, reconnect=True)
