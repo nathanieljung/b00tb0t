@@ -33,9 +33,7 @@ def loadConfig(keys):
 def loadPlugins():
     #This function gets the functions to load from the config file and adds them as extensions to the bot
     if __name__ == '__main__':
-        io = FileIO(CONFIG_FILE)
-        global plugins
-        plugins = json.load(io)['plugins']
+        plugins = loadConfig('plugins')[0]
         for plugin in plugins:
             bot.load_extension('plugins.{}'.format(plugin))
             print('\tLoaded extension: {}'.format(plugin))
@@ -49,6 +47,11 @@ async def save(ctx):
     io = open(SAVE_FILE, 'w')
     json.dump(data, io)
     io.close()
+    
+    io = open(CONFIG_FILE, 'w')
+    json.dump(config, io)
+    io.close()
+
     await ctx.send('Saved')
 
 @bot.command()
@@ -58,18 +61,24 @@ async def restart(ctx):
     await save(ctx)
     subprocess.run('./restart.sh')
 
+def getPluginList():
+    potentialplugins = os.listdir('./plugins')
+    returnPlugins = []
+    for pp in potentialplugins:
+        if ".py" in pp:
+            returnPlugins.append(pp[0:len(pp)-3])
+        else: continue
+    return returnPlugins
+
 @bot.command()
 async def listplugins(ctx):
     #This function gets all available plugins
     str ='```\n'
     loaded = []
     unloaded = []
-    potentialplugins = os.listdir('./plugins')
+    potentialplugins = getPluginList()
     for pp in potentialplugins:
-        if ".py" in pp:
-            pp = pp[0:len(pp)-3]
-        else: continue
-        if pp in plugins:
+        if pp in loadConfig('plugins'):
             loaded.append(pp)
         else:
             unloaded.append(pp)
@@ -81,6 +90,33 @@ async def listplugins(ctx):
         str += '\t- ' + up + '\n'
     str += '```'
     await ctx.send(str)
+
+@bot.command()
+async def loadplugin(ctx, *args):
+    potentialplugins = getPluginList()
+    loaded = []
+    alreadyLoaded = []
+    notLoaded = []
+    for arg in args:
+        if arg in potentialplugins:
+            if arg not in config('plugins'):
+                config('plugins').append(arg)
+                bot.load_extension('plugins.{}'.format(arg))
+                print('\tLoaded extension: {}'.format(arg))
+                loaded.append(arg)
+            else:
+                alreadyLoaded.append(arg)
+        else:
+            notLoaded.append(arg)
+    save(ctx)
+    returnString = ''
+    if len(loaded) > 0:
+        returnString += '**Loaded:** ' + ', '.join(loaded) + '\n'
+    if len(alreadyLoaded) > 0:
+        returnString += '**Not Loaded (already loaded):** ' + ', '.join(alreadyLoaded) + '\n'
+    if len(notLoaded) > 0:
+        returnString += '**Not Loaded (plugin does not exist):** ' + ', '.join(notLoaded) + '\n'
+    ctx.send(returnString)
 
 @bot.event
 async def on_ready():
