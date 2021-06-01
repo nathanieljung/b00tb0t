@@ -80,6 +80,7 @@ async def listplugins(ctx):
     for up in unloaded:
         str += '\t- ' + up + '\n'
     str += '```'
+    await ctx.send(str)
 
 @bot.event
 async def on_ready():
