@@ -80,7 +80,7 @@ async def listplugins(ctx):
     unloaded = []
     potentialplugins = getPluginList()
     for pp in potentialplugins:
-        if pp in loadConfig(['plugins']):
+        if pp in loadConfig(['plugins'])[0]:
             loaded.append(pp)
         else:
             unloaded.append(pp)
