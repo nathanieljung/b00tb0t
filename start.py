@@ -9,6 +9,7 @@ import json
 import subprocess
 
 from random import random
+import os
 
 #setup and config file variable setting
 CONFIG_FILE='config.json'
@@ -33,6 +34,7 @@ def loadPlugins():
     #This function gets the functions to load from the config file and adds them as extensions to the bot
     if __name__ == '__main__':
         io = FileIO(CONFIG_FILE)
+        global plugins
         plugins = json.load(io)['plugins']
         for plugin in plugins:
             bot.load_extension('plugins.{}'.format(plugin))
@@ -55,6 +57,29 @@ async def restart(ctx):
     await ctx.send('Restarting...')
     await save(ctx)
     subprocess.run('./restart.sh')
+
+@bot.command()
+async def listplugins(ctx):
+    #This function gets all available plugins
+    str ='```\n'
+    loaded = []
+    unloaded = []
+    potentialplugins = os.listdir('./plugins')
+    for pp in potentialplugins:
+        if ".py" in pp:
+            pp = pp[0:len(pp)-3]
+        else: continue
+        if pp in plugins:
+            loaded.append(pp)
+        else:
+            unloaded.append(pp)
+    str += 'Loaded Plugins:\n'
+    for lp in loaded:
+        str += '\t- ' + lp + '\n'
+    str += 'Unloaded Plugins:\n'
+    for up in unloaded:
+        str += '\t- ' + up + '\n'
+    str += '```'
 
 @bot.event
 async def on_ready():
