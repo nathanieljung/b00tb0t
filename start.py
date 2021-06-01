@@ -101,7 +101,7 @@ async def loadplugins(ctx, *args):
         if arg in potentialplugins:
             if arg not in loadConfig(['plugins'])[0]:
                 config['plugins'].append(arg) #probably should make a setter for this
-                bot.load_extension('plugins.{}'.format(arg))
+                await bot.load_extension('plugins.{}'.format(arg))
                 print('\tLoaded extension: {}'.format(arg))
                 loaded.append(arg)
             else:
