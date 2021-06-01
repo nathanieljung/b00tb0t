@@ -92,7 +92,7 @@ async def listplugins(ctx):
     await ctx.send(str)
 
 @bot.command()
-async def loadplugin(ctx, *args):
+async def loadplugins(ctx, *args):
     potentialplugins = getPluginList()
     loaded = []
     alreadyLoaded = []
@@ -108,7 +108,7 @@ async def loadplugin(ctx, *args):
                 alreadyLoaded.append(arg)
         else:
             notLoaded.append(arg)
-    save(ctx)
+    await save(ctx)
     returnString = ''
     if len(loaded) > 0:
         returnString += '**Loaded:** ' + ', '.join(loaded) + '\n'
@@ -116,7 +116,7 @@ async def loadplugin(ctx, *args):
         returnString += '**Not Loaded (already loaded):** ' + ', '.join(alreadyLoaded) + '\n'
     if len(notLoaded) > 0:
         returnString += '**Not Loaded (plugin does not exist):** ' + ', '.join(notLoaded) + '\n'
-    ctx.send(returnString)
+    await ctx.send(returnString)
 
 @bot.event
 async def on_ready():
