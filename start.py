@@ -39,9 +39,10 @@ def loadPlugins():
             print('\tLoaded extension: {}'.format(plugin))
 
 @bot.command()
-async def save(ctx):
+async def save(ctx, suppressOutput):
     #This function saves the state of the chats that the bot is in
-    await ctx.send('Saving...')
+    if not suppressOutput:
+        await ctx.send('Saving...')
     data = dict()
     data['channel_log'] = channel_log
     io = open(SAVE_FILE, 'w')
@@ -52,13 +53,14 @@ async def save(ctx):
     json.dump(config, io)
     io.close()
 
-    await ctx.send('Saved')
+    if not suppressOutput:
+        await ctx.send('Saved')
 
 @bot.command()
 async def restart(ctx):
     #This function quits the bot and reloads it
     await ctx.send('Restarting...')
-    await save(ctx)
+    await save(ctx, True)
     subprocess.run('./restart.sh')
 
 def getPluginList():
@@ -108,7 +110,7 @@ async def loadplugins(ctx, *args):
                 alreadyLoaded.append(arg)
         else:
             notLoaded.append(arg)
-    await save(ctx)
+    await save(ctx, True)
     returnString = ''
     if len(loaded) > 0:
         returnString += '**Loaded:** ' + ', '.join(loaded) + '\n'
