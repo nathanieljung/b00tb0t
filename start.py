@@ -33,7 +33,7 @@ def loadConfig(keys):
 def loadPlugins():
     #This function gets the functions to load from the config file and adds them as extensions to the bot
     if __name__ == '__main__':
-        plugins = loadConfig('plugins')[0]
+        plugins = loadConfig(['plugins'])[0]
         for plugin in plugins:
             bot.load_extension('plugins.{}'.format(plugin))
             print('\tLoaded extension: {}'.format(plugin))
