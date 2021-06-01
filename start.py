@@ -99,8 +99,8 @@ async def loadplugin(ctx, *args):
     notLoaded = []
     for arg in args:
         if arg in potentialplugins:
-            if arg not in config('plugins'):
-                config('plugins').append(arg)
+            if arg not in loadConfig(['plugins'])[0]:
+                config['plugins'].append(arg) #probably should make a setter for this
                 bot.load_extension('plugins.{}'.format(arg))
                 print('\tLoaded extension: {}'.format(arg))
                 loaded.append(arg)
