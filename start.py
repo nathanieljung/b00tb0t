@@ -170,11 +170,11 @@ async def on_message(message):
             if autoreaction in message.content:
                 await message.add_reaction(autoreactions[0][autoreaction])
     
-    #The bot has a 1 in 30 chance of reacting with 69420 to any given message because I am very mature.
-    if int(random()*30) == 0:
-        sixtyninefourtwenty = ['6️⃣', '9️⃣', '4️⃣', '2️⃣', '0️⃣']
-        for react in sixtyninefourtwenty:
-            await message.add_reaction(react)
+        #The bot has a 1 in 30 chance of reacting with 69420 to any given message because I am very mature.
+        if int(random()*30) == 0:
+            sixtyninefourtwenty = ['6️⃣', '9️⃣', '4️⃣', '2️⃣', '0️⃣']
+            for react in sixtyninefourtwenty:
+                await message.add_reaction(react)
 
 #Getting the bot up and running
 TOKEN = loadConfig(['TOKEN'])[0]
