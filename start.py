@@ -40,7 +40,7 @@ def loadPlugins():
 
 @bot.command()
 async def save(ctx, suppressOutput):
-    #This function saves the state of the chats that the bot is in
+    '''This function saves the state of the chats that the bot is in'''
     if not suppressOutput:
         await ctx.send('Saving...')
     data = dict()
@@ -58,7 +58,7 @@ async def save(ctx, suppressOutput):
 
 @bot.command()
 async def restart(ctx):
-    #This function quits the bot and reloads it
+    '''This function quits the bot and reloads it'''
     await ctx.send('Restarting...')
     await save(ctx, True)
     subprocess.run('./restart.sh')
@@ -74,7 +74,7 @@ def getPluginList():
 
 @bot.command()
 async def listplugins(ctx):
-    #This function gets all available plugins
+    '''This function gets all available plugins'''
     str ='```\n'
     loaded = []
     unloaded = []
@@ -95,6 +95,7 @@ async def listplugins(ctx):
 
 @bot.command()
 async def loadplugins(ctx, *args):
+    '''Allows you to add any number of available plugins to the current instance of bot'''
     potentialplugins = getPluginList()
     loaded = []
     alreadyLoaded = []
@@ -118,6 +119,34 @@ async def loadplugins(ctx, *args):
         returnString += '**Not Loaded (already loaded):** ' + ', '.join(alreadyLoaded) + '\n'
     if len(notLoaded) > 0:
         returnString += '**Not Loaded (plugin does not exist):** ' + ', '.join(notLoaded) + '\n'
+    await ctx.send(returnString)
+
+@bot.command()
+async def unloadplugins(ctx, *args):
+    '''Allows you to remove any number of available plugins to the current instance of bot'''
+    potentialplugins = getPluginList()
+    unloaded = []
+    alreadyUnloaded = []
+    notUnloaded = []
+    for arg in args:
+        if arg in potentialplugins:
+            if arg in loadConfig(['plugins'])[0]:
+                config['plugins'].remove(arg) #this is terrible and naive
+                bot.unload_extension('plugins.{}'.format(arg))
+                print('\tUnoaded extension: {}'.format(arg))
+                unloaded.append(arg)
+            else:
+                alreadyUnloaded.append(arg)
+        else:
+            notUnloaded.append(arg)
+    await save(ctx, True)
+    returnString = ''
+    if len(unloaded) > 0:
+        returnString += '**Unloaded:** ' + ', '.join(unloaded) + '\n'
+    if len(alreadyUnloaded) > 0:
+        returnString += '**Not Unloaded (already unloaded):** ' + ', '.join(alreadyUnloaded) + '\n'
+    if len(notUnloaded) > 0:
+        returnString += '**Not Unloaded (plugin does not exist):** ' + ', '.join(notUnloaded) + '\n'
     await ctx.send(returnString)
 
 @bot.event
