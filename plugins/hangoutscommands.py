@@ -13,6 +13,11 @@ class HangoutsCommands(commands.Cog):
         await ctx.send('Goodbye World!')
 
     @commands.command()
+    async def goodbyeworld(self, ctx):
+        '''This is terrible but not my idea'''
+        await ctx.send('National Suicide Prevention Lifeline: 1-800-273-8255')
+
+    @commands.command()
     async def echo(self, ctx):
         '''replies with users message '''
         await ctx.send(ctx.message.content[6:])
