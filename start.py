@@ -9,6 +9,7 @@ import json
 import subprocess
 
 from random import random
+import os
 
 #setup and config file variable setting
 CONFIG_FILE='config.json'
@@ -32,29 +33,121 @@ def loadConfig(keys):
 def loadPlugins():
     #This function gets the functions to load from the config file and adds them as extensions to the bot
     if __name__ == '__main__':
-        io = FileIO(CONFIG_FILE)
-        plugins = json.load(io)['plugins']
+        plugins = loadConfig(['plugins'])[0]
         for plugin in plugins:
             bot.load_extension('plugins.{}'.format(plugin))
             print('\tLoaded extension: {}'.format(plugin))
 
 @bot.command()
-async def save(ctx):
-    #This function saves the state of the chats that the bot is in
-    await ctx.send('Saving...')
+async def save(ctx, suppressOutput):
+    '''This function saves the state of the chats that the bot is in'''
+    if not suppressOutput:
+        await ctx.send('Saving...')
     data = dict()
     data['channel_log'] = channel_log
     io = open(SAVE_FILE, 'w')
     json.dump(data, io)
     io.close()
-    await ctx.send('Saved')
+    
+    io = open(CONFIG_FILE, 'w')
+    json.dump(config, io)
+    io.close()
+
+    if not suppressOutput:
+        await ctx.send('Saved')
 
 @bot.command()
 async def restart(ctx):
-    #This function quits the bot and reloads it
+    '''This function quits the bot and reloads it'''
     await ctx.send('Restarting...')
-    await save(ctx)
+    await save(ctx, True)
     subprocess.run('./restart.sh')
+
+def getPluginList():
+    potentialplugins = os.listdir('./plugins')
+    returnPlugins = []
+    for pp in potentialplugins:
+        if ".py" in pp:
+            returnPlugins.append(pp[0:len(pp)-3])
+        else: continue
+    return returnPlugins
+
+@bot.command()
+async def listplugins(ctx):
+    '''This function gets all available plugins'''
+    str ='```\n'
+    loaded = []
+    unloaded = []
+    potentialplugins = getPluginList()
+    for pp in potentialplugins:
+        if pp in loadConfig(['plugins'])[0]:
+            loaded.append(pp)
+        else:
+            unloaded.append(pp)
+    str += 'Loaded Plugins:\n'
+    for lp in loaded:
+        str += '\t- ' + lp + '\n'
+    str += 'Unloaded Plugins:\n'
+    for up in unloaded:
+        str += '\t- ' + up + '\n'
+    str += '```'
+    await ctx.send(str)
+
+@bot.command()
+async def loadplugins(ctx, *args):
+    '''Allows you to add any number of available plugins to the current instance of bot'''
+    potentialplugins = getPluginList()
+    loaded = []
+    alreadyLoaded = []
+    notLoaded = []
+    for arg in args:
+        if arg in potentialplugins:
+            if arg not in loadConfig(['plugins'])[0]:
+                config['plugins'].append(arg) #probably should make a setter for this
+                bot.load_extension('plugins.{}'.format(arg))
+                print('\tLoaded extension: {}'.format(arg))
+                loaded.append(arg)
+            else:
+                alreadyLoaded.append(arg)
+        else:
+            notLoaded.append(arg)
+    await save(ctx, True)
+    returnString = ''
+    if len(loaded) > 0:
+        returnString += '**Loaded:** ' + ', '.join(loaded) + '\n'
+    if len(alreadyLoaded) > 0:
+        returnString += '**Not Loaded (already loaded):** ' + ', '.join(alreadyLoaded) + '\n'
+    if len(notLoaded) > 0:
+        returnString += '**Not Loaded (plugin does not exist):** ' + ', '.join(notLoaded) + '\n'
+    await ctx.send(returnString)
+
+@bot.command()
+async def unloadplugins(ctx, *args):
+    '''Allows you to remove any number of available plugins to the current instance of bot'''
+    potentialplugins = getPluginList()
+    unloaded = []
+    alreadyUnloaded = []
+    notUnloaded = []
+    for arg in args:
+        if arg in potentialplugins:
+            if arg in loadConfig(['plugins'])[0]:
+                config['plugins'].remove(arg) #this is terrible and naive
+                bot.unload_extension('plugins.{}'.format(arg))
+                print('\tUnoaded extension: {}'.format(arg))
+                unloaded.append(arg)
+            else:
+                alreadyUnloaded.append(arg)
+        else:
+            notUnloaded.append(arg)
+    await save(ctx, True)
+    returnString = ''
+    if len(unloaded) > 0:
+        returnString += '**Unloaded:** ' + ', '.join(unloaded) + '\n'
+    if len(alreadyUnloaded) > 0:
+        returnString += '**Not Unloaded (already unloaded):** ' + ', '.join(alreadyUnloaded) + '\n'
+    if len(notUnloaded) > 0:
+        returnString += '**Not Unloaded (plugin does not exist):** ' + ', '.join(notUnloaded) + '\n'
+    await ctx.send(returnString)
 
 @bot.event
 async def on_ready():
@@ -106,11 +199,11 @@ async def on_message(message):
             if autoreaction in message.content:
                 await message.add_reaction(autoreactions[0][autoreaction])
     
-    #The bot has a 1 in 30 chance of reacting with 69420 to any given message because I am very mature.
-    if int(random()*30) == 0:
-        sixtyninefourtwenty = ['6️⃣', '9️⃣', '4️⃣', '2️⃣', '0️⃣']
-        for react in sixtyninefourtwenty:
-            await message.add_reaction(react)
+        #The bot has a 1 in 30 chance of reacting with 69420 to any given message because I am very mature.
+        if int(random()*30) == 0:
+            sixtyninefourtwenty = ['6️⃣', '9️⃣', '4️⃣', '2️⃣', '0️⃣']
+            for react in sixtyninefourtwenty:
+                await message.add_reaction(react)
 
 #Getting the bot up and running
 TOKEN = loadConfig(['TOKEN'])[0]
