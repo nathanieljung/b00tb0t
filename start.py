@@ -22,7 +22,7 @@ bot = commands.Bot(command_prefix='!', description='b00tbot')
 def loadSecret(key):
     io = FileIO(SECRET_FILE)
     secrets = json.load(io)
-    return config[key]
+    return secrets[key]
 
 def loadConfig(keys):
     #This function loads values from the main config file based on keys. It checks if there is a cached config to avoid unnecessary file reading
