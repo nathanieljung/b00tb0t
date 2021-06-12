@@ -56,11 +56,11 @@ async def save(ctx, suppressOutput):
     data = dict()
     data['channel_log'] = channel_log
     io = open(SAVE_FILE, 'w')
-    json.dump(data, io)
+    json.dump(data, io, indent=4)
     io.close()
     
     io = open(CONFIG_FILE, 'w')
-    json.dump(config, io)
+    json.dump(config, io, indent=4)
     io.close()
 
     if not suppressOutput:
@@ -162,7 +162,7 @@ async def unloadplugins(ctx, *args):
 @bot.command()
 async def viewconfig(ctx):
     stritem = '```json\n'
-    stritem += json.dumps(config)
+    stritem += json.dumps(config, indent=4)
     stritem += '\n```'
     await ctx.send(stritem)
 
