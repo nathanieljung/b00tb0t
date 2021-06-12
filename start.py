@@ -37,7 +37,7 @@ def loadConfig(keys):
         returnitem = config[key]
         if isinstance(returnitem, str) and returnitem[0:7]=='!secret':
             returnitem = loadSecret(returnitem[8:])
-        returnList.append(config[key])
+        returnList.append(returnitem)
     return returnList
 
 def loadPlugins():
