@@ -149,6 +149,13 @@ async def unloadplugins(ctx, *args):
         returnString += '**Not Unloaded (plugin does not exist):** ' + ', '.join(notUnloaded) + '\n'
     await ctx.send(returnString)
 
+@bot.command
+async def viewconfig(ctx):
+    str = '```json\n'
+    str += json.dumps(config)
+    str += '\n```'
+    await ctx.send(str)
+
 @bot.event
 async def on_ready():
     #This is the main startup function for the bot
