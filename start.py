@@ -14,9 +14,15 @@ import os
 #setup and config file variable setting
 CONFIG_FILE='config.json'
 SAVE_FILE='save.json'
+SECRET_FILE='secrets.json'
 config = False
 channel_log = dict()
 bot = commands.Bot(command_prefix='!', description='b00tbot')
+
+def loadSecret(key):
+    io = FileIO(SECRET_FILE)
+    secrets = json.load(io)
+    return config[key]
 
 def loadConfig(keys):
     #This function loads values from the main config file based on keys. It checks if there is a cached config to avoid unnecessary file reading
@@ -27,6 +33,9 @@ def loadConfig(keys):
     
     returnList = []
     for key in keys:
+        returnitem = config[key]
+        if isinstance(returnitem, str) and returnitem[0:7]=='!secret':
+            returnitem = loadSecret(returnitem[8:])
         returnList.append(config[key])
     return returnList
 
@@ -75,7 +84,7 @@ def getPluginList():
 @bot.command()
 async def listplugins(ctx):
     '''This function gets all available plugins'''
-    str ='```\n'
+    stritem ='```\n'
     loaded = []
     unloaded = []
     potentialplugins = getPluginList()
@@ -84,14 +93,14 @@ async def listplugins(ctx):
             loaded.append(pp)
         else:
             unloaded.append(pp)
-    str += 'Loaded Plugins:\n'
+    stritem += 'Loaded Plugins:\n'
     for lp in loaded:
-        str += '\t- ' + lp + '\n'
-    str += 'Unloaded Plugins:\n'
+        stritem += '\t- ' + lp + '\n'
+    stritem += 'Unloaded Plugins:\n'
     for up in unloaded:
-        str += '\t- ' + up + '\n'
-    str += '```'
-    await ctx.send(str)
+        stritem += '\t- ' + up + '\n'
+    stritem += '```'
+    await ctx.send(stritem)
 
 @bot.command()
 async def loadplugins(ctx, *args):
@@ -151,10 +160,10 @@ async def unloadplugins(ctx, *args):
 
 @bot.command()
 async def viewconfig(ctx):
-    str = '```json\n'
-    str += json.dumps(config)
-    str += '\n```'
-    await ctx.send(str)
+    stritem = '```json\n'
+    stritem += json.dumps(config)
+    stritem += '\n```'
+    await ctx.send(stritem)
 
 @bot.event
 async def on_ready():
