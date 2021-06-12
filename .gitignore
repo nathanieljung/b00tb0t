@@ -1,5 +1,6 @@
-config.json
+secrets.json
 save.json
+nohup.out
 __pycache__/*
 plugins/__pycache__/*
 .vscode/settings.json
