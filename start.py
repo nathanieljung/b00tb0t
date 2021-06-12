@@ -149,7 +149,7 @@ async def unloadplugins(ctx, *args):
         returnString += '**Not Unloaded (plugin does not exist):** ' + ', '.join(notUnloaded) + '\n'
     await ctx.send(returnString)
 
-@bot.command
+@bot.command()
 async def viewconfig(ctx):
     str = '```json\n'
     str += json.dumps(config)
