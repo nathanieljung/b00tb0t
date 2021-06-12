@@ -22,6 +22,7 @@ bot = commands.Bot(command_prefix='!', description='b00tbot')
 def loadSecret(key):
     io = FileIO(SECRET_FILE)
     secrets = json.load(io)
+    print(secrets[key])
     return secrets[key]
 
 def loadConfig(keys):
