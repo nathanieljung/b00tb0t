@@ -1,1 +1,8 @@
-{"TOKEN": "!secret token", "plugins": ["picturecommands", "hangoutscommands"], "autoreplies": {}, "autoreactions": {}}
+{
+    "TOKEN": "!secret token", 
+    "plugins": ["picturecommands", "hangoutscommands"], 
+    "autoreplies": {
+        "69": ["nice"]
+    }, 
+    "autoreactions": {}
+}
