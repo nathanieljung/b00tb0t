@@ -20,6 +20,7 @@ SECRET_FILE='secrets.json'
 config = False
 channel_log = dict()
 bot = commands.Bot(command_prefix='!', description='b00tbot')
+slash = SlashCommand(bot)
 
 def loadSecret(key):
     io = FileIO(SECRET_FILE)
