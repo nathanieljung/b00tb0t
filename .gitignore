@@ -1,5 +1,4 @@
-secrets.json
-save.json
+*.json
 nohup.out
 __pycache__/*
 plugins/__pycache__/*
