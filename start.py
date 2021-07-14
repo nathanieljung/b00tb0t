@@ -25,7 +25,6 @@ slash = SlashCommand(bot, sync_commands=True)
 def loadSecret(key):
     io = FileIO(SECRET_FILE)
     secrets = json.load(io)
-    print(secrets[key])
     return secrets[key]
 
 def loadConfig(keys):
@@ -52,6 +51,7 @@ def loadPlugins():
             print('\tLoaded extension: {}'.format(plugin))
 
 guild_ids = loadConfig(['slash_channels'])[0]
+bot_id = loadConfig(['bot_id'])[0]
 
 @bot.command()
 async def save(ctx, suppressOutput):
@@ -202,7 +202,7 @@ async def on_message(message):
         channel_log[message.channel.id] = dict()
         channel_log[message.channel.id]['Fs'] = 0
     
-    if message.author.id != 773745805227982910:
+    if message.author.id != bot_id:
         
         if message.content == 'F':
             channel_log[message.channel.id]['Fs'] +=1

@@ -8,9 +8,11 @@ class AceAttorney(commands.Cog):
 
     #Commands
     @commands.command()
-    async def lastcommands(ctx, num_comments):
+    async def lastmessages(self, ctx, num_comments):
         to_send = ''
-        async for message in ctx.channel.history(limit=int(num_comments)):
+        history = ctx.channel.history(limit=int(num_comments))
+        await history.next()
+        async for message in history:
             to_send += message.author.name + ': ' + message.content + '\n'
         await ctx.send(to_send)
 
