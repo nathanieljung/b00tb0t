@@ -51,6 +51,8 @@ def loadPlugins():
             bot.load_extension('plugins.{}'.format(plugin))
             print('\tLoaded extension: {}'.format(plugin))
 
+guild_ids = loadConfig(['slash_channels'])[0]
+
 @bot.command()
 async def save(ctx, suppressOutput):
     '''This function saves the state of the chats that the bot is in'''
@@ -167,7 +169,7 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name='With My Emotions', type=1, url='https://twitch.tv/paymoneywubby'))
     print('Successfully logged in and booted!\n')
 
-@slash.slash(name="listplugins", description="Testing slash commands with this one.", guild_ids=[142780820371800064])
+@slash.slash(name="listplugins", description="Testing slash commands with this one.", guild_ids=guild_ids)
 async def listplugins(ctx):
     '''This function gets all available plugins'''
     stritem ='```\n'
