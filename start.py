@@ -6,7 +6,7 @@ from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
 
 from io import FileIO
-import json
+import json, pickle
 
 import subprocess
 
@@ -74,6 +74,8 @@ async def save(ctx, suppressOutput):
 @bot.command()
 async def restart(ctx):
     '''This function quits the bot and reloads it'''
+    with open('ctx.cfg', 'wb') as ctxfile:
+        pickle.dump(ctx, ctxfile)
     await ctx.send('Restarting...')
     await save(ctx, True)
     subprocess.run('./restart.sh')

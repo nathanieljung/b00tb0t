@@ -3,3 +3,4 @@ nohup.out
 __pycache__/*
 plugins/__pycache__/*
 .vscode/settings.json
+*.mp4
