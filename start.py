@@ -20,7 +20,7 @@ SECRET_FILE='secrets.json'
 config = False
 channel_log = dict()
 bot = commands.Bot(command_prefix='!', description='b00tbot')
-slash = SlashCommand(bot)
+slash = SlashCommand(bot, sync_commands=True)
 
 def loadSecret(key):
     io = FileIO(SECRET_FILE)
@@ -85,26 +85,7 @@ def getPluginList():
         else: continue
     return returnPlugins
 
-@slash.slash(name="listplugins", description="Testing slash commands with this one.")
-async def listplugins(ctx):
-    '''This function gets all available plugins'''
-    stritem ='```\n'
-    loaded = []
-    unloaded = []
-    potentialplugins = getPluginList()
-    for pp in potentialplugins:
-        if pp in loadConfig(['plugins'])[0]:
-            loaded.append(pp)
-        else:
-            unloaded.append(pp)
-    stritem += 'Loaded Plugins:\n'
-    for lp in loaded:
-        stritem += '\t- ' + lp + '\n'
-    stritem += 'Unloaded Plugins:\n'
-    for up in unloaded:
-        stritem += '\t- ' + up + '\n'
-    stritem += '```'
-    await ctx.send(stritem)
+
 
 @bot.command()
 async def loadplugins(ctx, *args):
@@ -185,6 +166,27 @@ async def on_ready():
     print('Logged in as: {} - {}\nVersion: {}\n'.format(bot.user.name, bot.user.id, discord.__version__))
     await bot.change_presence(activity=discord.Game(name='With My Emotions', type=1, url='https://twitch.tv/paymoneywubby'))
     print('Successfully logged in and booted!\n')
+
+@slash.slash(name="listplugins", description="Testing slash commands with this one.", guild_ids=[142780820371800064])
+async def listplugins(ctx):
+    '''This function gets all available plugins'''
+    stritem ='```\n'
+    loaded = []
+    unloaded = []
+    potentialplugins = getPluginList()
+    for pp in potentialplugins:
+        if pp in loadConfig(['plugins'])[0]:
+            loaded.append(pp)
+        else:
+            unloaded.append(pp)
+    stritem += 'Loaded Plugins:\n'
+    for lp in loaded:
+        stritem += '\t- ' + lp + '\n'
+    stritem += 'Unloaded Plugins:\n'
+    for up in unloaded:
+        stritem += '\t- ' + up + '\n'
+    stritem += '```'
+    await ctx.send(stritem)
 
 @bot.event
 async def on_message(message):
