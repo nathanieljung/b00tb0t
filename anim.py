@@ -17,6 +17,8 @@ import spacy
 from textblob import TextBlob, exceptions
 import re
 
+os.environ["IMAGEIO_FFMPEG_EXE"] = "/usr/bin/ffmpeg"
+
 nlp = spacy.load("en_core_web_sm")
 
 
