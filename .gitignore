@@ -4,3 +4,5 @@ __pycache__/*
 plugins/__pycache__/*
 .vscode/settings.json
 *.mp4
+*.mp3
+*.cfg

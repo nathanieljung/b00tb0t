@@ -157,11 +157,14 @@ async def viewconfig(ctx):
 @bot.event
 async def on_ready():
     #This is the main startup function for the bot
-    print('\n\nLoading save state...')
-    io = open(SAVE_FILE, 'r')
-    data = json.load(io)
-    channel_log = data['channel_log']
-    print('Save file loaded!\n')
+    try:
+        print('\n\nLoading save state...')
+        io = open(SAVE_FILE, 'r')
+        data = json.load(io)
+        channel_log = data['channel_log']
+        print('Save file loaded!\n')
+    except:
+        print('No save file found. Either this is a first run or save file was deleted.')
     
     print('Loading plugins...')
     loadPlugins()

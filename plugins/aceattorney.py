@@ -13,7 +13,7 @@ class DiscordAuthor:
             self.name = name
 
 class DiscordComment:
-    def __init__(self, username: str, text, str, score: int = 0):
+    def __init__(self, username: str, text: str, score: int = 0):
         self.author = DiscordAuthor(username)
         self.body = text
         self.score = score
@@ -39,6 +39,8 @@ class AceAttorney(commands.Cog):
         history = ctx.channel.history(limit=num_comments + 1)
         await history.next()
         async for message in history:
+            while message.attachments:
+                message.content += ' <' + message.attachments.pop().filename + '>'
             unames.append(message.author.name)
             origcomments.append(message.content)
         cnt = Counter(unames)
