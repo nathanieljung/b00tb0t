@@ -24,15 +24,6 @@ class AceAttorney(commands.Cog):
 
     #Commands
     @commands.command()
-    async def lastmessages(self, ctx, num_comments):
-        to_send = ''
-        history = ctx.channel.history(limit=int(num_comments))
-        await history.next()
-        async for message in history:
-            to_send += message.author.name + ': ' + message.content + '\n'
-        await ctx.send(to_send)
-
-    @commands.command()
     async def acecourt(self, ctx: context, num_comments: int):
         unames = []
         origcomments = []
