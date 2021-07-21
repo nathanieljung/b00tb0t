@@ -1,6 +1,7 @@
 {
     "TOKEN": "!secret token", 
-    "plugins": ["picturecommands", "hangoutscommands"], 
+    "bot_id": "!secret bot_id",
+    "plugins": ["aceattorney"], 
     "autoreplies": {
         "69": ["nice"]
     }, 

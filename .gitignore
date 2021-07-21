@@ -6,3 +6,4 @@ plugins/__pycache__/*
 *.mp4
 *.mp3
 *.cfg
+*.png

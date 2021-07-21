@@ -3,7 +3,10 @@ import discord
 
 from discord.ext import commands
 
-from discord_slash import SlashCommand, SlashContext
+from discord_slash import SlashCommand
+from discord_slash.utils import manage_commands
+from discord_slash.utils.manage_commands import create_option, create_choice
+from discord_slash.http import SlashCommandRequest
 
 from io import FileIO
 import json, pickle
@@ -13,19 +16,14 @@ import subprocess
 from random import random
 import os
 
-#setup and config file variable setting
-CONFIG_FILE='config.json'
-SAVE_FILE='save.json'
-SECRET_FILE='secrets.json'
-config = False
-channel_log = dict()
-bot = commands.Bot(command_prefix='!', description='b00tbot')
-slash = SlashCommand(bot, sync_commands=True)
-
-def loadSecret(key):
-    io = FileIO(SECRET_FILE)
-    secrets = json.load(io)
-    return secrets[key]
+def getPluginList():
+    potentialplugins = os.listdir('./plugins')
+    returnPlugins = []
+    for pp in potentialplugins:
+        if ".py" in pp:
+            returnPlugins.append(pp[0:len(pp)-3])
+        else: continue
+    return returnPlugins
 
 def loadConfig(keys):
     #This function loads values from the main config file based on keys. It checks if there is a cached config to avoid unnecessary file reading
@@ -42,6 +40,45 @@ def loadConfig(keys):
         returnList.append(returnitem)
     return returnList
 
+#setup and config file variable setting
+CONFIG_FILE='config.json'
+SAVE_FILE='save.json'
+SECRET_FILE='secrets.json'
+config = False
+channel_log = dict()
+loadedPlugins = []
+unloadedPlugins = []
+bot = commands.Bot(command_prefix='!', description='b00tbot')
+
+
+potentialplugins = getPluginList()
+for pp in potentialplugins:
+    if pp in loadConfig(['plugins'])[0]:
+        loadedPlugins.append(create_choice(pp, pp))
+    else:
+        unloadedPlugins.append(create_choice(pp, pp))
+
+slash = SlashCommand(bot, sync_commands=True)
+
+def loadSecret(key):
+    io = FileIO(SECRET_FILE)
+    secrets = json.load(io)
+    return secrets[key]
+
+async def refreshPlugins():
+    slash.commands.pop('unloadplugin')
+    slash.commands.pop('loadplugin')
+    await slash.sync_all_commands()
+    slash.add_slash_command(unloadplugin, name="unloadplugin", 
+                description="Allows you to remove any number of available plugins to the current instance of bot", 
+                options=[create_option(name="plugin", description="This is the plugin to unload.", option_type=3, required=False, choices=loadedPlugins)], 
+                guild_ids=guild_ids)
+    slash.add_slash_command(loadplugin, name="loadplugin", 
+                description="Allows you to add any number of available plugins to the current instance of bot", 
+                options=[create_option(name="plugin", description="This is the plugin to load.", option_type=3, required=False, choices=unloadedPlugins)], 
+                guild_ids=guild_ids)
+    await slash.sync_all_commands()
+
 def loadPlugins():
     #This function gets the functions to load from the config file and adds them as extensions to the bot
     if __name__ == '__main__':
@@ -50,109 +87,9 @@ def loadPlugins():
             bot.load_extension('plugins.{}'.format(plugin))
             print('\tLoaded extension: {}'.format(plugin))
 
+
 guild_ids = loadConfig(['slash_channels'])[0]
 bot_id = loadConfig(['bot_id'])[0]
-
-@bot.command()
-async def save(ctx, suppressOutput):
-    '''This function saves the state of the chats that the bot is in'''
-    if not suppressOutput:
-        await ctx.send('Saving...')
-    data = dict()
-    data['channel_log'] = channel_log
-    io = open(SAVE_FILE, 'w')
-    json.dump(data, io, indent=4)
-    io.close()
-    
-    io = open(CONFIG_FILE, 'w')
-    json.dump(config, io, indent=4)
-    io.close()
-
-    if not suppressOutput:
-        await ctx.send('Saved')
-
-@bot.command()
-async def restart(ctx):
-    '''This function quits the bot and reloads it'''
-    with open('ctx.cfg', 'wb') as ctxfile:
-        pickle.dump(ctx, ctxfile)
-    await ctx.send('Restarting...')
-    await save(ctx, True)
-    subprocess.run('./restart.sh')
-
-def getPluginList():
-    potentialplugins = os.listdir('./plugins')
-    returnPlugins = []
-    for pp in potentialplugins:
-        if ".py" in pp:
-            returnPlugins.append(pp[0:len(pp)-3])
-        else: continue
-    return returnPlugins
-
-
-
-@bot.command()
-async def loadplugins(ctx, *args):
-    '''Allows you to add any number of available plugins to the current instance of bot'''
-    potentialplugins = getPluginList()
-    loaded = []
-    alreadyLoaded = []
-    notLoaded = []
-    for arg in args:
-        if arg in potentialplugins:
-            if arg not in loadConfig(['plugins'])[0]:
-                config['plugins'].append(arg) #probably should make a setter for this
-                bot.load_extension('plugins.{}'.format(arg))
-                print('\tLoaded extension: {}'.format(arg))
-                loaded.append(arg)
-            else:
-                alreadyLoaded.append(arg)
-        else:
-            notLoaded.append(arg)
-    await save(ctx, True)
-    returnString = ''
-    if len(loaded) > 0:
-        returnString += '**Loaded:** ' + ', '.join(loaded) + '\n'
-    if len(alreadyLoaded) > 0:
-        returnString += '**Not Loaded (already loaded):** ' + ', '.join(alreadyLoaded) + '\n'
-    if len(notLoaded) > 0:
-        returnString += '**Not Loaded (plugin does not exist):** ' + ', '.join(notLoaded) + '\n'
-    await ctx.send(returnString)
-
-@bot.command()
-async def unloadplugins(ctx, *args):
-    '''Allows you to remove any number of available plugins to the current instance of bot'''
-    potentialplugins = getPluginList()
-    unloaded = []
-    alreadyUnloaded = []
-    notUnloaded = []
-    for arg in args:
-        if arg in potentialplugins:
-            if arg in loadConfig(['plugins'])[0]:
-                config['plugins'].remove(arg) #this is terrible and naive
-                bot.unload_extension('plugins.{}'.format(arg))
-                print('\tUnoaded extension: {}'.format(arg))
-                unloaded.append(arg)
-            else:
-                alreadyUnloaded.append(arg)
-        else:
-            notUnloaded.append(arg)
-    await save(ctx, True)
-    returnString = ''
-    if len(unloaded) > 0:
-        returnString += '**Unloaded:** ' + ', '.join(unloaded) + '\n'
-    if len(alreadyUnloaded) > 0:
-        returnString += '**Not Unloaded (already unloaded):** ' + ', '.join(alreadyUnloaded) + '\n'
-    if len(notUnloaded) > 0:
-        returnString += '**Not Unloaded (plugin does not exist):** ' + ', '.join(notUnloaded) + '\n'
-    await ctx.send(returnString)
-
-@bot.command()
-async def viewconfig(ctx):
-    stritem = '```json\n'
-    stritem += json.dumps(config, indent=4)
-    stritem += '\n```'
-    await ctx.send(stritem)
 
 @bot.event
 async def on_ready():
@@ -174,7 +111,7 @@ async def on_ready():
     await bot.change_presence(activity=discord.Game(name='With My Emotions', type=1, url='https://twitch.tv/paymoneywubby'))
     print('Successfully logged in and booted!\n')
 
-@slash.slash(name="listplugins", description="Testing slash commands with this one.", guild_ids=guild_ids)
+@slash.slash(name="listplugins", description="This function gets all available plugins", guild_ids=guild_ids)
 async def listplugins(ctx):
     '''This function gets all available plugins'''
     stritem ='```\n'
@@ -193,6 +130,114 @@ async def listplugins(ctx):
     for up in unloaded:
         stritem += '\t- ' + up + '\n'
     stritem += '```'
+    await ctx.send(stritem)
+
+@bot.command()
+async def savestate(ctx, suppressOutput):
+    '''This function saves the state of the chats that the bot is in'''
+    if not suppressOutput:
+        await ctx.send('Saving...')
+    data = dict()
+    data['channel_log'] = channel_log
+    io = open(SAVE_FILE, 'w')
+    json.dump(data, io, indent=4)
+    io.close()
+    
+    io = open(CONFIG_FILE, 'w')
+    json.dump(config, io, indent=4)
+    io.close()
+
+    if not suppressOutput:
+        await ctx.send('Saved')
+
+@slash.slash(name="restart", description="This function quits the bot and reloads it", guild_ids=guild_ids)
+async def restart(ctx):
+    '''This function quits the bot and reloads it'''
+    with open('ctx.cfg', 'wb') as ctxfile:
+        pickle.dump(ctx, ctxfile)
+    await ctx.send('Restarting...')
+    await savestate(ctx, True)
+    subprocess.run('./restart.sh')
+
+@slash.slash(   name="loadplugin", 
+                description="Allows you to add any number of available plugins to the current instance of bot", 
+                options=[create_option(name="plugin", description="This is the plugin to load.", option_type=3, required=False, choices=unloadedPlugins)], 
+                guild_ids=guild_ids)
+async def loadplugin(ctx, plugin: str):
+    '''Allows you to add any number of available plugins to the current instance of bot'''
+    potentialplugins = getPluginList()
+    loaded = []
+    alreadyLoaded = []
+    notLoaded = []
+    if plugin in potentialplugins:
+        if plugin not in loadConfig(['plugins'])[0]:
+            await ctx.send('Loading **{}**. Please have patience, this may take a while...'.format(plugin))
+            config['plugins'].append(plugin) #probably should make a setter for this
+            bot.load_extension('plugins.{}'.format(plugin))
+            print('\tLoaded extension: {}'.format(plugin))
+            loadedPlugins.append(create_choice(plugin, plugin))
+            for i in range(len(unloadedPlugins)):
+                if unloadedPlugins[i]['value'] == plugin:
+                    unloadedPlugins.pop(i)
+                    break
+            loaded.append(plugin)
+        else:
+            alreadyLoaded.append(plugin)
+    else:
+        notLoaded.append(plugin)
+    await savestate(ctx, True)
+    returnString = ''
+    if len(loaded) > 0:
+        returnString += '**Loaded:** ' + ', '.join(loaded) + '\n'
+    if len(alreadyLoaded) > 0:
+        returnString += '**Not Loaded (already loaded):** ' + ', '.join(alreadyLoaded) + '\n'
+    if len(notLoaded) > 0:
+        returnString += '**Not Loaded (plugin does not exist):** ' + ', '.join(notLoaded) + '\n'
+    await ctx.send(returnString)
+    await refreshPlugins()
+
+@slash.slash(   name="unloadplugin", 
+                description="Allows you to remove any number of available plugins to the current instance of bot", 
+                options=[create_option(name="plugin", description="This is the plugin to unload.", option_type=3, required=False, choices=loadedPlugins)], 
+                guild_ids=guild_ids)
+async def unloadplugin(ctx, plugin: str):
+    '''Allows you to remove any number of available plugins to the current instance of bot'''
+    potentialplugins = getPluginList()
+    unloaded = []
+    alreadyUnloaded = []
+    notUnloaded = []
+    if plugin in potentialplugins:
+        if plugin in loadConfig(['plugins'])[0]:
+            config['plugins'].remove(plugin) #this is terrible and naive
+            bot.unload_extension('plugins.{}'.format(plugin))
+            print('\tUnloaded extension: {}'.format(plugin))
+            unloadedPlugins.append(create_choice(plugin, plugin))
+            for i in range(len(loadedPlugins)):
+                if loadedPlugins[i]['value'] == plugin:
+                    loadedPlugins.pop(i)
+                    break
+            unloaded.append(plugin)
+        else:
+            alreadyUnloaded.append(plugin)
+    else:
+        notUnloaded.append(plugin)
+    await savestate(ctx, True)
+    returnString = ''
+    if len(unloaded) > 0:
+        returnString += '**Unloaded:** ' + ', '.join(unloaded) + '\n'
+    if len(alreadyUnloaded) > 0:
+        returnString += '**Not Unloaded (already unloaded):** ' + ', '.join(alreadyUnloaded) + '\n'
+    if len(notUnloaded) > 0:
+        returnString += '**Not Unloaded (plugin does not exist):** ' + ', '.join(notUnloaded) + '\n'
+
+    await ctx.send(returnString)
+    await refreshPlugins()
+        
+@slash.slash(name="viewconfig", description="Prints config.json", guild_ids=guild_ids)
+async def viewconfig(ctx):
+    stritem = '```json\n'
+    stritem += json.dumps(config, indent=4)
+    stritem += '\n```'
     await ctx.send(stritem)
 
 @bot.event
