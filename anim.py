@@ -1,5 +1,5 @@
 from PIL import Image, ImageDraw, ImageFont
-from matplotlib.pyplot import imshow
+from matplotlib.pyplot import imshow, sca
 import numpy as np
 import cv2
 from typing import List, Dict
@@ -283,13 +283,19 @@ def do_video(config: List[Dict]):
         textbox = AnimImg("assets/textbox4.png", w=bg.w)
         objection = AnimImg("assets/objection.gif")
         bench = None
+        evidence_x = 0
+        evidence_y = 5
         if scene["location"] == Location.COURTROOM_LEFT:
             bench = AnimImg("assets/logo-left.png")
+            evidence_x = 160
         elif scene["location"] == Location.COURTROOM_RIGHT:
             bench = AnimImg("assets/logo-right.png")
+            evidence_x = 10
         elif scene["location"] == Location.WITNESS_STAND:
             bench = AnimImg("assets/witness_stand.png", w=bg.w)
             bench.y = bg.h - bench.h
+            evidence_x=166
+            evidence_y=0
         if "audio" in scene:
             sound_effects.append({"_type": "bg", "src": f'assets/{scene["audio"]}.mp3'})
         current_frame = 0
@@ -297,6 +303,13 @@ def do_video(config: List[Dict]):
         text = None
         #         print('scene', scene)
         for obj in scene["scene"]:
+            evidence = None
+            if "img" in obj and obj["img"]:
+                img = Image.open(obj["img"])
+                width = img.width
+                height = img.height
+                scale = width / 90 if width > height else height / 90
+                evidence = AnimImg(obj["img"], x=evidence_x, y=evidence_y, w=int(width/scale), h=int(height/scale))
             if "character" in obj:
                 _dir = character_map[obj["character"]]
                 current_character_name = str(obj["character"])
@@ -394,7 +407,7 @@ def do_video(config: List[Dict]):
                 scene_objs = list(
                     filter(
                         lambda x: x is not None,
-                        [bg, character, bench, textbox, _character_name, text],
+                        [bg, character, bench, textbox, _character_name, text, evidence],
                     )
                 )
                 scenes.append(
@@ -412,7 +425,7 @@ def do_video(config: List[Dict]):
                 scene_objs = list(
                     filter(
                         lambda x: x is not None,
-                        [bg, character, bench, textbox, _character_name, text, arrow],
+                        [bg, character, bench, textbox, _character_name, text, arrow, evidence],
                     )
                 )
                 scenes.append(
@@ -440,6 +453,7 @@ def do_video(config: List[Dict]):
                                 character_name,
                                 text,
                                 arrow,
+                                evidence
                             ],
                         )
                     )
@@ -746,6 +760,7 @@ def comments_to_scene(comments: List, characters: Dict, **kwargs):
                     )
                     and idx == 0,
                     "emotion": main_emotion,
+                    "img": comment.img
                 }
             )
         scene.append(character_block)
@@ -772,6 +787,7 @@ def comments_to_scene(comments: List, characters: Dict, **kwargs):
                     "emotion": obj["emotion"],
                     "text": obj["text"],
                     "name": obj["name"],
+                    "img": obj["img"]
                 }
             )
         formatted_scene = {

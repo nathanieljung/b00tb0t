@@ -14,10 +14,31 @@ class DiscordAuthor:
             self.name = name
 
 class DiscordComment:
-    def __init__(self, username: str, text: str, score: int = 0):
+    def __init__(self, username: str, text: str, score: int = 0, img: str = None):
         self.author = DiscordAuthor(username)
         self.body = text
         self.score = score
+        self.img = img
+
+def process_comment(message):
+    img = None
+    attachment = None
+    if message.attachments:
+        attachment = message.attachments.pop()
+        type, extension = attachment.content_type.split('/')
+        if type == 'image':
+            if not message.content:
+                message.content = 'Behold! My evidence.'
+            img = attachment.filename
+        elif not message.content:
+            message.content = '{}s aren\'t supported, but I have evidence anyway...'.format(extension)
+        else:
+            message.content += ' <' + attachment.filename + '>'
+    return message.author.name, message.content, img, attachment
+
+def cleanupfiles(comment: str):
+    if comment:
+        os.remove(comment)
 
 class AceAttorney(commands.Cog):
     def __init(self, bot):
@@ -26,15 +47,27 @@ class AceAttorney(commands.Cog):
     #Commands
     @commands.command()
     async def acecourt(self, ctx: context, num_comments: int):
+        basemessage = ctx.message.reference.resolved if ctx.message.reference else ctx.message
         unames = []
         origcomments = []
-        history = ctx.channel.history(limit=num_comments + 1)
-        await history.next()
+        imgs = []
+        if not basemessage.id == ctx.message.id:
+            num_comments -= 1
+            uname, comment, img, attachment = process_comment(basemessage)
+            if img:
+                await attachment.save(attachment.filename)
+            unames.append(uname)
+            origcomments.append(comment)
+            imgs.append(img)
+        history = ctx.channel.history(limit=num_comments, oldest_first=False, before=basemessage)
         async for message in history:
-            while message.attachments:
-                message.content += ' <' + message.attachments.pop().filename + '>'
-            unames.append(message.author.name)
-            origcomments.append(message.content)
+            uname, comment, img, attachment = process_comment(message)
+            if img:
+                await attachment.save(attachment.filename)
+            unames.append(uname)
+            origcomments.append(comment)
+            imgs.append(img)            
+
         cnt = Counter(unames)
         most_common_pair = cnt.most_common(len(cnt))
         most_common = []
@@ -43,8 +76,8 @@ class AceAttorney(commands.Cog):
         
         characters = anim.get_characters(most_common=most_common)
         comments = []
-        for uname, comment in zip(unames, origcomments):
-            comments.append(DiscordComment(uname, comment))
+        for uname, comment, img in zip(unames, origcomments, imgs):
+            comments.append(DiscordComment(uname, comment, img=img))
         comments.reverse()
         anim.comments_to_scene(comments, characters, output_filename="ace.mp4")
         fileSize = os.path.getsize("ace.mp4")
@@ -52,6 +85,8 @@ class AceAttorney(commands.Cog):
             await ctx.send(content="", file=discord.File("ace.mp4"))
         else:
             ctx.send("The resulting filesize is too big to send.")
+        for img in imgs:
+            cleanupfiles(img)
 
 def setup(bot):
     bot.add_cog(AceAttorney(bot))
