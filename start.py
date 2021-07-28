@@ -245,19 +245,11 @@ async def on_message(message):
     #This is the primary message handler for the bot. Default functionality not included in plugins is included here.
     await bot.process_commands(message)
     
-    #The bot will respond with an 'F' (to pay respects) after three consecutive 'F's in a channel.
-    if not message.channel.id in channel_log:
-        channel_log[message.channel.id] = dict()
-        channel_log[message.channel.id]['Fs'] = 0
-    
     if message.author.id != bot_id:
-        
-        if message.content == 'F':
-            channel_log[message.channel.id]['Fs'] +=1
-            if channel_log[message.channel.id]['Fs'] == 3:
-                await message.channel.send('F')
-        else:
-            channel_log[message.channel.id]['Fs'] = 0
+        last_three = await message.channel.history(limit=3).flatten()
+        if len(last_three) >= 3:
+            if last_three[0].content == last_three[1].content == last_three[2].content and last_three[0].author.id != bot_id and last_three[1].author.id != bot_id and last_three[2].author.id != bot_id:
+                await message.channel.send(last_three[0].content)
         
         #This causes the bot to auto-reply to messages containing certain keywords that are added to the main configuration file.
         autoreplies = loadConfig(['autoreplies'])

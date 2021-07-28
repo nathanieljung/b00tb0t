@@ -31,14 +31,15 @@ def process_comment(message):
                 message.content = 'Behold! My evidence.'
             img = attachment.filename
         elif not message.content:
-            message.content = '{}s aren\'t supported, but I have evidence anyway...'.format(extension)
+            message.content = 'evidence.{}'.format(extension)
         else:
-            message.content += ' <' + attachment.filename + '>'
+            message.content += ' <evidence.{}>'.format(extension)
     return message.author.name, message.content, img, attachment
 
 def cleanupfiles(comment: str):
     if comment:
-        os.remove(comment)
+        if os.path.isfile(comment):
+            os.remove(comment)
 
 class AceAttorney(commands.Cog):
     def __init(self, bot):
@@ -84,7 +85,7 @@ class AceAttorney(commands.Cog):
         if fileSize < ctx.channel.guild.filesize_limit:
             await ctx.send(content="", file=discord.File("ace.mp4"))
         else:
-            ctx.send("The resulting filesize is too big to send.")
+            await ctx.send("The resulting filesize is too big to send.")
         for img in imgs:
             cleanupfiles(img)
 
