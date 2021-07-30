@@ -1,4 +1,5 @@
 #imports
+from botutils import literal_message
 from discord.ext.commands.core import command
 
 from discord.ext import commands
@@ -34,7 +35,8 @@ def process_comment(message):
             message.content = 'evidence.{}'.format(extension)
         else:
             message.content += ' <evidence.{}>'.format(extension)
-    return message.author.name, message.content, img, attachment
+    text = literal_message(message)
+    return message.author.name, text, img, attachment
 
 def cleanupfiles(comment: str):
     if comment:
