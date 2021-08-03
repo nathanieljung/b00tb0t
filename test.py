@@ -1,4 +1,5 @@
-import anim
+from plugins.aceattorney import anim
+
 
 class DiscordAuthor:
     def __init__(self, name):
