@@ -1,14 +1,15 @@
 #imports
-from botutils import literal_message
-from discord.ext.commands.core import command
-
-from discord.ext import commands
-from discord.ext.commands import Context as context
-
-
+import os
 from collections import Counter
 
-import anim, os, discord
+import discord
+from botutils import literal_message
+from discord.ext import commands
+from discord.ext.commands import Context as context
+from discord.ext.commands.core import command
+
+from plugins.aceattorney import anim
+
 
 class DiscordAuthor:
         def __init__(self, name):
