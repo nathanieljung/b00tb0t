@@ -1,18 +1,20 @@
 #this script starts the bot and loads all plugins. Plugins are located under ./plugins
-import json
-import os
-import pickle
-import subprocess
-from io import FileIO
-from random import random
-
 import discord
-from discord.ext import commands
-from discord_slash import SlashCommand
-from discord_slash.http import SlashCommandRequest
-from discord_slash.utils import manage_commands
-from discord_slash.utils.manage_commands import create_choice, create_option
 
+from discord.ext import commands
+
+from discord_slash import SlashCommand
+from discord_slash.utils import manage_commands
+from discord_slash.utils.manage_commands import create_option, create_choice
+from discord_slash.http import SlashCommandRequest
+
+from io import FileIO
+import json, pickle
+
+import subprocess
+
+from random import random
+import os
 
 def getPluginList():
     potentialplugins = os.listdir('./plugins')
