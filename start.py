@@ -1,4 +1,5 @@
 #this script starts the bot and loads all plugins. Plugins are located under ./plugins
+from botutils import literal_message
 import discord
 
 from discord.ext import commands
@@ -246,6 +247,7 @@ async def on_message(message):
     await bot.process_commands(message)
     
     if message.author.id != bot_id:
+        message_literal_content = literal_message(message)
         last_three = await message.channel.history(limit=3).flatten()
         if len(last_three) >= 3:
             if last_three[0].content == last_three[1].content == last_three[2].content and last_three[0].author.id != bot_id and last_three[1].author.id != bot_id and last_three[2].author.id != bot_id:
@@ -254,7 +256,7 @@ async def on_message(message):
         #This causes the bot to auto-reply to messages containing certain keywords that are added to the main configuration file.
         autoreplies = loadConfig(['autoreplies'])
         for autoreply_key in autoreplies[0].keys():
-            if autoreply_key in message.content:
+            if autoreply_key in message_literal_content:
                 autoreply_options = autoreplies[0][autoreply_key]
                 autoreply = autoreply_options[int(random()*len(autoreply_options))]
                 await message.channel.send(autoreply)
@@ -262,7 +264,7 @@ async def on_message(message):
         #This causes the bot to auto-react to messages containing certain keywords that are added to the main configuration file.
         autoreactions = loadConfig(['autoreactions'])
         for autoreaction in autoreactions[0].keys():
-            if autoreaction in message.content:
+            if autoreaction in message_literal_content:
                 await message.add_reaction(autoreactions[0][autoreaction])
     
         #The bot has a 1 in 30 chance of reacting with 69420 to any given message because I am very mature.
