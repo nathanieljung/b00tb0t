@@ -220,7 +220,7 @@ class AnimVideo:
                 os.makedirs("tmp")
             rnd_hash = random.getrandbits(64)
             output_path = f"tmp/{rnd_hash}.mp4"
-        fourcc = cv2.VideoWriter_fourcc(*"avc1")
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         background = self.scenes[0].frames[0]
         if os.path.isfile(output_path):
             os.remove(output_path)
@@ -724,7 +724,7 @@ def comments_to_scene(comments: List, characters: Dict, **kwargs):
         except:
             polarity = blob.sentiment.polarity
         tokens = nlp(comment.body)
-        sentences = [sent.string.strip() for sent in tokens.sents]
+        sentences = [sent.text.strip() for sent in tokens.sents]
         joined_sentences = []
         i = 0
         while i < len(sentences):

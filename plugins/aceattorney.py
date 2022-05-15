@@ -30,7 +30,7 @@ def process_comment(message):
         if type == 'image':
             if not message.content:
                 message.content = 'Behold! My evidence.'
-            img = attachment.filename
+            img = '{}.{}'.format(hash(attachment.filename), extension)
         elif not message.content:
             message.content = 'evidence.{}'.format(extension)
         else:
@@ -58,7 +58,7 @@ class AceAttorney(commands.Cog):
             num_comments -= 1
             uname, comment, img, attachment = process_comment(basemessage)
             if img:
-                await attachment.save(attachment.filename)
+                await attachment.save(img)
             unames.append(uname)
             origcomments.append(comment)
             imgs.append(img)
@@ -66,7 +66,7 @@ class AceAttorney(commands.Cog):
         async for message in history:
             uname, comment, img, attachment = process_comment(message)
             if img:
-                await attachment.save(attachment.filename)
+                await attachment.save(img)
             unames.append(uname)
             origcomments.append(comment)
             imgs.append(img)            
