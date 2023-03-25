@@ -7,3 +7,5 @@ plugins/__pycache__/*
 *.mp3
 *.cfg
 *.png
+*.jpg
+*.bat
